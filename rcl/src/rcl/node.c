@@ -208,8 +208,10 @@ rcl_node_init(
   node->impl->logger_name = NULL;
   node->impl->fq_name = NULL;
   node->impl->options = rcl_node_get_default_options();
+#ifdef RCL_MICROROS_COMPLETE_IMPL
   node->impl->registered_types_by_type_hash = rcutils_get_zero_initialized_hash_map();
   node->impl->get_type_description_service = rcl_get_zero_initialized_service();
+#endif // RCL_MICROROS_COMPLETE_IMPL
   node->context = context;
   // Initialize node impl.
   ret = rcl_node_options_copy(options, &(node->impl->options));
@@ -680,7 +682,8 @@ rcl_ret_t rcl_node_type_description_service_init(rcl_node_t * node)
   allocator.deallocate(service_name, allocator.state);
   return ret;
 #else
-  return RCL_RET_OK;
+  (void)node;
+  return RCL_RET_UNSUPPORTED;
 #endif //RCL_MICROROS
 }
 
@@ -702,7 +705,8 @@ rcl_ret_t rcl_node_type_description_service_fini(rcl_node_t * node)
 
   return ret;
 #else
-  return RCL_RET_OK;
+  (void)node;
+  return RCL_RET_UNSUPPORTED;
 #endif //RCL_MICROROS
 }
 
@@ -722,6 +726,11 @@ rcl_ret_t rcl_node_get_type_description_service(
   *service_out = &node->impl->get_type_description_service;
 #endif
   return RCL_RET_OK;
+#else
+  (void)node;
+  (void)service_out;
+  return RCL_RET_UNSUPPORTED;
+#endif //RCL_MICROROS
 }
 
 #ifdef __cplusplus
